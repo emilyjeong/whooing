@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow">
+<title>CASHFLOW · 가계부</title>
+
+<!-- 디자인 시스템 토큰 + 폰트 -->
+<link rel="stylesheet" href="tokens.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+/* ============================================================
+ *  CASHFLOW · 페이지별 스타일 (디자인 시스템 토큰만 사용)
+ * ============================================================ */
+
+/* ─── 헤더 ──────────────────────────────────────────── */
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.crumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.home-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+/* ─── 월 셀렉터 ────────────────────────────────────── */
+.month-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px var(--pad);
+  margin-bottom: var(--gap);
+}
+.month-bar .month {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.reload-btn {
+  background: transparent;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.reload-btn:hover { color: var(--ink); background: rgba(255,255,255,0.04); }
+.reload-btn.spinning { animation: spin 0.6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.update-line {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+/* ─── 카드 헤더 (제목 + 우측 총액) ───────────────── */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.card-head .left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-head .icon {
+  font-size: 13px;
+  line-height: 1;
+}
+.card-head .title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.card-head .total {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.total.info { color: var(--info); }
+.total.neg  { color: var(--neg); }
+.total.pos  { color: var(--pos); }
+
+/* ─── 항목 행 (2열 그리드) ─────────────────────────── */
+.rows {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 10px;
+  padding: 4px 2px 2px;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.row .k {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.row .v {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* ─── 토글 (수입의 변화 / 지출의 변화) ───────────── */
+.toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--ink-mid);
+  font-size: 12px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  padding: 14px 0 2px;
+  margin-top: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+}
+.toggle .chev {
+  font-size: 10px;
+  transition: transform 0.25s ease;
+}
+.toggle.open .chev { transform: rotate(180deg); }
+.toggle:hover { color: var(--ink); }
+
+.collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.collapse.open { max-height: 280px; }
+
+.chart-wrap {
+  height: 200px;
+  padding-top: 14px;
+}
+
+/* ─── 순저축 카드 (강조 카드) ──────────────────────── */
+.save-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.save-top .left { display: flex; align-items: center; gap: 8px; }
+.save-top .title {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.save-top .rate {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.save-top .rate .pct {
+  font-size: 13px;
+  color: var(--ink-mid);
+  font-weight: 500;
+  margin-left: 2px;
+}
+.save-amount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-mid);
+  margin-bottom: 10px;
+  letter-spacing: 0.02em;
+}
+.save-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.save-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+.save-bar-fill.neg { background: var(--neg); }
+
+/* ─── 에러 박스 ────────────────────────────────────── */
+.error-box {
+  background: rgba(240,77,98,0.06);
+  border: 1px solid rgba(240,77,98,0.2);
+  color: var(--neg);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  margin-bottom: var(--gap);
+  display: none;
+}
+.error-box.show { display: block; }
+
+/* ─── 푸터 ─────────────────────────────────────────── */
+footer {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+}
+footer .pulse {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--pos);
+  margin-right: 6px;
+  vertical-align: middle;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ─── 진입 애니메이션 ─────────────────────────────── */
+.card, .month-bar { animation: fadeUp 0.4s ease backwards; }
+.month-bar { animation-delay: 0.05s; }
+.card:nth-of-type(1) { animation-delay: 0.10s; }
+.card:nth-of-type(2) { animation-delay: 0.16s; }
+.card:nth-of-type(3) { animation-delay: 0.22s; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-head">
+    <span class="crumb">04 / CASHFLOW</span>
+    <a href="#" class="home-btn" aria-label="홈으로">🏠</a>
+  </header>
+
+  <!-- 월 표시 + 새로고침 -->
+  <div class="month-bar">
+    <span class="month" id="monthLabel">불러오는 중…</span>
+    <button class="reload-btn" id="reloadBtn" title="새로고침" aria-label="새로고침">↻</button>
+  </div>
+
+  <div class="update-line" id="updateText">LAST SYNC · —</div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- ─── 총 수입 ─── -->
+  <section class="card">
+    <div class="card-head">
+      <div class="left">
+        <span class="icon" style="color:var(--info)">💰</span>
+        <span class="title">총 수입</span>
+      </div>
+      <span class="total info" id="incomeTotal">—</span>
+    </div>
+
+    <div class="rows" id="incomeRows"></div>
+
+    <button class="toggle" data-target="incomeChart">
+      수입의 변화 <span class="chev">▾</span>
+    </button>
+    <div class="collapse" id="incomeChart">
+      <div class="chart-wrap">
+        <canvas id="incomeCanvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 총 지출 ─── -->
+  <section class="card">
+    <div class="card-head">
+      <div class="left">
+        <span class="icon" style="color:var(--neg)">📉</span>
+        <span class="title">총 지출</span>
+      </div>
+      <span class="total neg" id="expenseTotal">—</span>
+    </div>
+
+    <div class="rows" id="expenseRows"></div>
+
+    <button class="toggle" data-target="expenseChart">
+      지출의 변화 <span class="chev">▾</span>
+    </button>
+    <div class="collapse" id="expenseChart">
+      <div class="chart-wrap">
+        <canvas id="expenseCanvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── 순저축 (강조 카드) ─── -->
+  <section class="card hi">
+    <div class="save-top">
+      <div class="left">
+        <span class="icon" style="color:var(--accent)">🐷</span>
+        <span class="title">순저축 · 저축률</span>
+      </div>
+      <span class="rate"><span id="saveRate">—</span><span class="pct">%</span></span>
+    </div>
+    <div class="save-amount" id="saveAmount">—</div>
+    <div class="save-bar">
+      <div class="save-bar-fill" id="saveBar" style="width: 0%"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="pulse"></span>SYNCED · WHOOING API
+  </footer>
+</div>
+
+<!-- 환경 설정 -->
+<script src="config.js"></script>
+
+<script>
+  // ─── 포맷터 ───────────────────────────────────────
+  const fmtKRW = (n) => '₩' + Math.round(Number(n) || 0).toLocaleString(CONFIG.locale);
+  const fmtKRWSign = (n) => (n >= 0 ? '+' : '') + fmtKRW(n);
+
+  const fmtMonthLabel = (ym) => {
+    const s = String(ym);
+    if (s.length !== 6) return s;
+    return `${s.slice(0, 4)}년 ${parseInt(s.slice(4, 6))}월`;
+  };
+
+  const fmtMonthShort = (ym) => {
+    const s = String(ym);
+    if (s.length !== 6) return s;
+    return `${s.slice(2, 4)}/${s.slice(4, 6)}`;
+  };
+
+  const fmtDateTime = (iso) => {
+    try {
+      const d = new Date(iso);
+      const z = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;
+    } catch { return '—'; }
+  };
+
+  // ─── Chart.js 글로벌 ─────────────────────────────
+  Chart.defaults.font.family = "'JetBrains Mono', monospace";
+  Chart.defaults.font.size = 10;
+  Chart.defaults.color = '#9a9690';
+
+  function buildBar(canvasId, labels, data, colorHi, colorLo) {
+    const ctx = document.getElementById(canvasId);
+    if (ctx._chart) ctx._chart.destroy();
+    ctx._chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          backgroundColor: (c) => c.dataIndex === data.length - 1 ? colorHi : colorLo,
+          borderRadius: 4,
+          barPercentage: 0.7,
+          categoryPercentage: 0.85
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1c1b19',
+            borderColor: '#353330',
+            borderWidth: 1,
+            titleColor: '#f0ede8',
+            bodyColor: '#9a9690',
+            titleFont: { family: "'JetBrains Mono', monospace", size: 10 },
+            bodyFont: { family: "'JetBrains Mono', monospace", size: 10 },
+            padding: 8,
+            displayColors: false,
+            callbacks: { label: (ctx) => '₩' + Number(ctx.parsed.y).toLocaleString(CONFIG.locale) }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            border: { color: '#2a2926' },
+            ticks: { color: '#9a9690', font: { size: 10 } }
+          },
+          y: { display: false, grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // ─── 토글 (lazy chart build) ─────────────────────
+  let chartsBuilt = {};
+  let cachedData = null;
+
+  document.querySelectorAll('.toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.target;
+      const panel = document.getElementById(target);
+      const open = panel.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      if (open && !chartsBuilt[target] && cachedData) {
+        renderChart(target);
+        chartsBuilt[target] = true;
+      }
+    });
+  });
+
+  function renderChart(target) {
+    if (!cachedData?.trend?.length) return;
+    const labels = cachedData.trend.map(r => fmtMonthShort(r.ym));
+    if (target === 'incomeChart') {
+      const data = cachedData.trend.map(r => r.income);
+      buildBar('incomeCanvas', labels, data, '#5aabf0', 'rgba(90,171,240,0.22)');
+    } else if (target === 'expenseChart') {
+      const data = cachedData.trend.map(r => r.expenses);
+      buildBar('expenseCanvas', labels, data, '#f04d62', 'rgba(240,77,98,0.22)');
+    }
+  }
+
+  // ─── 렌더링 ──────────────────────────────────────
+  function render(d) {
+    cachedData = d;
+
+    // 현재 월
+    const latest = d.trend?.[d.trend.length - 1];
+    if (latest) document.getElementById('monthLabel').textContent = fmtMonthLabel(latest.ym);
+
+    // 마지막 sync 시간
+    document.getElementById('updateText').textContent =
+      `LAST SYNC · ${fmtDateTime(d.last_sync)}`;
+
+    // 수입
+    const incomeTotal = (d.income || []).reduce((s, r) => s + r.money, 0);
+    document.getElementById('incomeTotal').textContent = fmtKRW(incomeTotal);
+
+    const incomeRows = document.getElementById('incomeRows');
+    incomeRows.innerHTML = '';
+    const visibleIncome = (d.income || []).filter(r => r.money > 0);
+    if (!visibleIncome.length) {
+      incomeRows.innerHTML = '<div class="row"><span class="k">이번달 수입 없음</span><span class="v">—</span></div>';
+    } else {
+      visibleIncome.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'row';
+        div.innerHTML = `<span class="k">${escapeHtml(r.title)}</span><span class="v">${fmtKRW(r.money)}</span>`;
+        incomeRows.appendChild(div);
+      });
+    }
+
+    // 지출
+    const exp = d.expense || {};
+    const fixed = exp.fixed || 0;
+    const variable = exp.variable || 0;
+    const other = exp.other || 0;
+    const expenseTotal = fixed + variable + other;
+
+    document.getElementById('expenseTotal').textContent = fmtKRW(expenseTotal);
+
+    const expenseRows = document.getElementById('expenseRows');
+    expenseRows.innerHTML = '';
+    const addExpRow = (label, val) => {
+      const div = document.createElement('div');
+      div.className = 'row';
+      div.innerHTML = `<span class="k">${label}</span><span class="v">${fmtKRW(val)}</span>`;
+      expenseRows.appendChild(div);
+    };
+    addExpRow('고정비용', fixed);
+    addExpRow('유동비용', variable);
+    if (other > 0) addExpRow('미분류', other);
+
+    // 순저축
+    const net = incomeTotal - expenseTotal;
+    const rate = incomeTotal > 0 ? (net / incomeTotal * 100) : 0;
+    document.getElementById('saveRate').textContent = rate.toFixed(1);
+    document.getElementById('saveAmount').textContent =
+      `${fmtKRWSign(net)} / ${fmtKRW(incomeTotal)}`;
+
+    const bar = document.getElementById('saveBar');
+    const barWidth = Math.max(0, Math.min(100, Math.abs(rate)));
+    bar.style.width = barWidth + '%';
+    bar.classList.toggle('neg', rate < 0);
+
+    // 이미 펼친 차트 다시 그림
+    Object.keys(chartsBuilt).forEach(target => {
+      if (document.getElementById(target).classList.contains('open')) {
+        renderChart(target);
+      }
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = `⚠ ${msg}`;
+    box.classList.add('show');
+  }
+  function hideError() { document.getElementById('errorBox').classList.remove('show'); }
+
+  // ─── fetch ───────────────────────────────────────
+  async function load() {
+    const btn = document.getElementById('reloadBtn');
+    btn.classList.add('spinning');
+    hideError();
+    try {
+      const res = await fetch(CONFIG.endpoints.cashflow);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      if (CONFIG.debug) console.log('CASHFLOW data:', data);
+      render(data);
+    } catch (e) {
+      console.error(e);
+      showError(`데이터를 가져오지 못함: ${e.message}`);
+      document.getElementById('monthLabel').textContent = '오류';
+    } finally {
+      setTimeout(() => btn.classList.remove('spinning'), 400);
+    }
+  }
+
+  document.getElementById('reloadBtn').addEventListener('click', load);
+
+  // 자동 새로고침 (CONFIG.autoRefreshMs가 설정되었으면)
+  if (CONFIG.autoRefreshMs) setInterval(load, CONFIG.autoRefreshMs);
+
+  // 초기 로드
+  load();
+</script>
+</body>
+</html>
