@@ -9,7 +9,7 @@ window.CONFIG = {
 
   /* ─── 데이터 엔드포인트 ─────────────────────────── */
   endpoints: {
-    cashflow: 'https://script.google.com/macros/s/AKfycbykIYKa9oA13CtAXxmFCNruZMHstBzyPn2mruWg26DhBjFbJ2SG_qxpcb6kOWbHdTS1PQ/exec',
+    cashflow: 'https://script.google.com/macros/s/AKfycbyNXsSIEwNWPnke1eYcYcm-GTl77-HyH-yi8OrdvwESnb7QQK6fDsqVsrvRy8fdqXzuhw/exec',
     // portfolio: '',
     // macro: '',
     // realestate: '',
