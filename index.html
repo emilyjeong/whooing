@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
@@ -84,14 +85,36 @@
 .reload-btn.spinning { animation: spin 0.6s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ─── Sync Row (LAST SYNC + 📸 동기화 버튼) ─── */
+.sync-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+}
 .update-line {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--ink-dim);
   letter-spacing: 0.04em;
-  text-align: center;
-  margin-bottom: 14px;
 }
+.btn-snapshot {
+  background: var(--card-hi);
+  border: 1px solid var(--border-mid);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .12s, background-color .12s, transform .08s;
+}
+.btn-snapshot:hover  { border-color: var(--ink-mid); }
+.btn-snapshot:active { transform: scale(0.96); background: var(--border); }
+.btn-snapshot:disabled { opacity: 0.6; cursor: wait; }
 
 /* 카드 헤더 */
 .card-head {
@@ -295,6 +318,7 @@ footer .pulse {
   to { opacity: 1; transform: translateY(0); }
 }
 </style>
+
 </head>
 <body>
 <div class="wrap">
@@ -309,11 +333,15 @@ footer .pulse {
     <button class="reload-btn" id="reloadBtn" title="새로고침" aria-label="새로고침">↻</button>
   </div>
 
-  <div class="update-line" id="updateText">LAST SYNC · —</div>
+  <div class="sync-row">
+    <span class="update-line" id="updateText">LAST SYNC · —</span>
+    <button class="btn-snapshot" id="syncBtn" type="button">📸 지금 동기화</button>
+  </div>
 
   <div class="error-box" id="errorBox"></div>
 
   <!-- ─── 총 수입 ─── -->
+
   <section class="card">
     <div class="card-head">
       <div class="left">
@@ -323,19 +351,23 @@ footer .pulse {
       <span class="total info" id="incomeTotal">—</span>
     </div>
 
-    <div class="rows" id="incomeRows"></div>
+```
+<div class="rows" id="incomeRows"></div>
 
-    <button class="toggle" data-target="incomeChart">
-      수입의 변화 <span class="chev">▾</span>
-    </button>
-    <div class="collapse" id="incomeChart">
-      <div class="chart-wrap">
-        <canvas id="incomeCanvas"></canvas>
-      </div>
-    </div>
+<button class="toggle" data-target="incomeChart">
+  수입의 변화 <span class="chev">▾</span>
+</button>
+<div class="collapse" id="incomeChart">
+  <div class="chart-wrap">
+    <canvas id="incomeCanvas"></canvas>
+  </div>
+</div>
+```
+
   </section>
 
   <!-- ─── 총 지출 ─── -->
+
   <section class="card">
     <div class="card-head">
       <div class="left">
@@ -345,19 +377,23 @@ footer .pulse {
       <span class="total purple" id="expenseTotal">—</span>
     </div>
 
-    <div class="rows" id="expenseRows"></div>
+```
+<div class="rows" id="expenseRows"></div>
 
-    <button class="toggle" data-target="expenseChart">
-      지출의 변화 <span class="chev">▾</span>
-    </button>
-    <div class="collapse" id="expenseChart">
-      <div class="chart-wrap">
-        <canvas id="expenseCanvas"></canvas>
-      </div>
-    </div>
+<button class="toggle" data-target="expenseChart">
+  지출의 변화 <span class="chev">▾</span>
+</button>
+<div class="collapse" id="expenseChart">
+  <div class="chart-wrap">
+    <canvas id="expenseCanvas"></canvas>
+  </div>
+</div>
+```
+
   </section>
 
   <!-- ─── 순저축 ─── -->
+
   <section class="card hi">
     <div class="save-top">
       <div class="left">
@@ -378,6 +414,7 @@ footer .pulse {
 </div>
 
 <script src="config.js"></script>
+
 <script>
   // ─── 포맷터 ───────────────────────────────────────
   const fmtKRW = (n) => '₩' + Math.round(Number(n) || 0).toLocaleString(CONFIG.locale);
@@ -575,7 +612,7 @@ footer .pulse {
     document.getElementById('monthLabel').style.color = '';
   }
 
-  // ─── fetch ───────────────────────────────────────
+  // ─── fetch (시트에서 데이터 읽기) ─────────────────
   async function load() {
     const btn = document.getElementById('reloadBtn');
     btn.classList.add('spinning');
@@ -601,9 +638,41 @@ footer .pulse {
     }
   }
 
+  // ─── "지금 동기화" 버튼 (후잉 → 시트 sync 트리거) ─
+  async function syncNow() {
+    const btn = document.getElementById('syncBtn');
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '📸 동기화 중…';
+    hideError();
+
+    try {
+      const res = await fetch(CONFIG.endpoints.cashflow, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'sync' }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const d = await res.json();
+      if (!d.ok) throw new Error(d.error || 'sync 실패');
+
+      // 동기화 후 화면 데이터 새로고침
+      await load();
+    } catch (e) {
+      console.error(e);
+      showError(`동기화 실패: ${e.message}`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
+
   document.getElementById('reloadBtn').addEventListener('click', load);
+  document.getElementById('syncBtn').addEventListener('click', syncNow);
   if (CONFIG.autoRefreshMs) setInterval(load, CONFIG.autoRefreshMs);
   load();
 </script>
+
 </body>
 </html>
