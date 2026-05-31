@@ -7,7 +7,7 @@ window.CONFIG = {
 
   /* ─── 데이터 엔드포인트 ─────────────────────────── */
   endpoints: {
-    cashflow: 'https://script.google.com/macros/s/AKfycbykIYKa9oA13CtAXxmFCNruZMHstBzyPn2mruWg26DhBjFbJ2SG_qxpcb6kOWbHdTS1PQ/exec',
+    cashflow: 'https://script.google.com/macros/s/AKfycbygxvmpQVFETTLHPwtjY2Uh0vYaMVIkfTTM9HU9yb5mT3ggAy-6ETd_tivaLjsmy9qTnw/exec',
   },
 
   /* ─── 자동 새로고침 (ms) — null이면 안 함 ─────── */
