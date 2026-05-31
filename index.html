@@ -23,8 +23,7 @@
 .home-btn {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--card); border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-size: 14px; text-decoration: none; color: var(--ink);
 }
@@ -122,8 +121,6 @@
 
 .collapse { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
 .collapse.open { max-height: 280px; }
-.collapse.tall { } /* 입력 폼은 키울 수 있게 */
-.collapse.tall.open { max-height: 1200px; }
 
 .chart-wrap { height: 200px; padding-top: 14px; }
 
@@ -159,196 +156,7 @@
 }
 .save-bar-fill.neg { background: var(--neg); }
 
-/* ─── 거래 입력 카드 ───────────────────────────── */
-.input-trigger {
-  width: 100%;
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px var(--pad);
-  margin-bottom: var(--gap);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: space-between;
-  color: var(--ink); font-family: var(--font-sans);
-  transition: background 0.2s ease;
-}
-.input-trigger:hover { background: var(--card-hi); }
-.input-trigger .label-text {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 14px; font-weight: 600;
-}
-.input-trigger .plus-icon {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px;
-  background: var(--accent);
-  color: var(--bg);
-  border-radius: 50%;
-  font-size: 16px; font-weight: 700;
-  transition: transform 0.25s ease;
-}
-.input-trigger.open .plus-icon { transform: rotate(45deg); }
-.input-trigger .chev {
-  font-size: 11px; color: var(--ink-dim);
-  transition: transform 0.25s ease;
-}
-.input-trigger.open .chev { transform: rotate(180deg); }
-
-/* 입력 카드 본문 */
-.input-card {
-  background: var(--card-hi);
-  border: 1px solid var(--border-mid);
-  border-radius: var(--radius);
-  padding: var(--pad);
-  margin-top: -6px;
-  margin-bottom: var(--gap);
-}
-
-/* 세그먼트 (수입/지출/이체) */
-.seg {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 3px;
-  margin-bottom: 14px;
-  gap: 3px;
-}
-.seg button {
-  background: transparent; border: none;
-  color: var(--ink-mid);
-  padding: 8px 0;
-  font-family: var(--font-sans); font-size: 12px; font-weight: 600;
-  cursor: pointer;
-  border-radius: var(--radius-xs);
-  transition: all 0.18s ease;
-}
-.seg button.active {
-  background: var(--card);
-  color: var(--ink);
-}
-.seg button:hover:not(.active) { color: var(--ink); }
-
-/* 자주 쓰는 거래 */
-.section-label {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 600;
-  color: var(--ink-dim); letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 4px 0 8px;
-}
-.frequent-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-.frequent-chip {
-  background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 9px 11px;
-  display: flex; justify-content: space-between; align-items: center; gap: 8px;
-  cursor: pointer; text-align: left;
-  font-family: var(--font-sans);
-  color: var(--ink);
-  transition: all 0.15s ease;
-}
-.frequent-chip:hover { border-color: var(--border-mid); background: var(--card-hi); }
-.frequent-chip .name {
-  font-size: 12.5px; font-weight: 500;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.frequent-chip .amt {
-  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
-  color: var(--ink-mid); white-space: nowrap;
-}
-.frequent-empty {
-  font-size: 11px; color: var(--ink-dim); font-style: italic;
-  padding: 6px 0 10px;
-}
-
-/* 입력 폼 */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.field {
-  display: flex; flex-direction: column; gap: 5px;
-}
-.field.full { grid-column: 1 / -1; }
-.field label {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 600;
-  color: var(--ink-dim);
-  letter-spacing: 0.04em; text-transform: uppercase;
-}
-.field input,
-.field select,
-.field textarea {
-  background: var(--card); border: 1px solid var(--border);
-  color: var(--ink);
-  border-radius: var(--radius-xs);
-  padding: 9px 10px;
-  font-family: var(--font-sans); font-size: 13px;
-  outline: none;
-  transition: border-color 0.2s ease;
-}
-.field input.num { font-family: var(--font-mono); font-weight: 700; }
-.field input:focus,
-.field select:focus,
-.field textarea:focus { border-color: var(--accent); }
-.field select {
-  -webkit-appearance: none; appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9690' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 10px center;
-  padding-right: 28px;
-}
-
-.btn-row {
-  display: flex; gap: 8px;
-  margin-top: 14px;
-}
-.btn {
-  flex: 1;
-  padding: 11px 0;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-sans); font-size: 13px; font-weight: 700;
-  cursor: pointer; border: 1px solid var(--border);
-  background: var(--card); color: var(--ink);
-  transition: all 0.18s ease;
-}
-.btn:hover:not(:disabled) { background: var(--card-hi); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn.primary {
-  background: rgba(232,184,0,0.12);
-  border-color: rgba(232,184,0,0.45);
-  color: var(--accent);
-}
-.btn.primary:hover:not(:disabled) {
-  background: rgba(232,184,0,0.2);
-}
-
-.form-msg {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 10px 12px;
-  border-radius: var(--radius-xs);
-  margin-top: 10px;
-  display: none;
-}
-.form-msg.show { display: block; }
-.form-msg.ok {
-  background: rgba(0,201,138,0.08);
-  border: 1px solid rgba(0,201,138,0.25);
-  color: var(--pos);
-}
-.form-msg.err {
-  background: rgba(240,77,98,0.08);
-  border: 1px solid rgba(240,77,98,0.25);
-  color: var(--neg);
-}
-
-/* 에러 박스 (페이지 상단) */
+/* ─── 에러 ──────────────────────────────────────── */
 .error-box {
   background: rgba(240,77,98,0.06);
   border: 1px solid rgba(240,77,98,0.2);
@@ -360,7 +168,7 @@
 }
 .error-box.show { display: block; }
 
-/* 푸터 */
+/* ─── 푸터 ─────────────────────────────────────── */
 footer {
   margin-top: 20px; padding-top: 14px;
   border-top: 1px solid var(--border);
@@ -376,24 +184,17 @@ footer .pulse {
   margin-right: 6px; vertical-align: middle;
   animation: pulse 2s ease-in-out infinite;
 }
-footer .reset-link {
-  display: block; margin-top: 10px;
-  color: var(--ink-dim); font-size: 9px;
-  text-decoration: underline; cursor: pointer;
-}
-footer .reset-link:hover { color: var(--ink-mid); }
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
 
 /* 진입 애니메이션 */
-.card, .month-bar, .input-trigger { animation: fadeUp 0.4s ease backwards; }
+.card, .month-bar { animation: fadeUp 0.4s ease backwards; }
 .month-bar { animation-delay: 0.05s; }
 .card:nth-of-type(1) { animation-delay: 0.10s; }
 .card:nth-of-type(2) { animation-delay: 0.16s; }
 .card:nth-of-type(3) { animation-delay: 0.22s; }
-.input-trigger { animation-delay: 0.28s; }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -466,78 +267,8 @@ footer .reset-link:hover { color: var(--ink-mid); }
     <div class="save-bar"><div class="save-bar-fill" id="saveBar" style="width: 0%"></div></div>
   </section>
 
-  <!-- ─── 거래 입력 트리거 ─── -->
-  <button class="input-trigger" id="inputTrigger">
-    <span class="label-text">
-      <span class="plus-icon">+</span>
-      거래 입력
-    </span>
-    <span class="chev">▾</span>
-  </button>
-
-  <!-- 거래 입력 카드 (접이식) -->
-  <div class="collapse tall" id="inputCollapse">
-    <div class="input-card">
-
-      <!-- 수입/지출/이체 -->
-      <div class="seg" id="kindSeg">
-        <button data-kind="expense" class="active">지출</button>
-        <button data-kind="income">수입</button>
-        <button data-kind="transfer">이체</button>
-      </div>
-
-      <!-- 자주 쓰는 거래 -->
-      <div class="section-label">자주 쓰는 거래</div>
-      <div class="frequent-list" id="frequentList">
-        <div class="frequent-empty">메타 로딩 중…</div>
-      </div>
-
-      <!-- 일반 입력 폼 -->
-      <div class="section-label">직접 입력</div>
-      <div class="form-grid">
-        <div class="field full">
-          <label for="f_item">내역</label>
-          <input type="text" id="f_item" placeholder="예: 점심" autocomplete="off">
-        </div>
-
-        <div class="field">
-          <label for="f_money">금액</label>
-          <input type="number" id="f_money" class="num" placeholder="0" inputmode="numeric">
-        </div>
-
-        <div class="field">
-          <label for="f_date">날짜</label>
-          <input type="date" id="f_date">
-        </div>
-
-        <div class="field" id="leftField">
-          <label for="f_left">왼쪽 (지출 항목)</label>
-          <select id="f_left"></select>
-        </div>
-
-        <div class="field" id="rightField">
-          <label for="f_right">오른쪽 (결제 수단)</label>
-          <select id="f_right"></select>
-        </div>
-
-        <div class="field full">
-          <label for="f_memo">메모 (선택)</label>
-          <input type="text" id="f_memo" placeholder="">
-        </div>
-      </div>
-
-      <div class="btn-row">
-        <button class="btn" id="btnReset">초기화</button>
-        <button class="btn primary" id="btnSubmit">기록하기</button>
-      </div>
-
-      <div class="form-msg" id="formMsg"></div>
-    </div>
-  </div>
-
   <footer>
     <span class="pulse"></span>SYNCED · WHOOING API
-    <span class="reset-link" id="resetSecret">시크릿 재설정</span>
   </footer>
 </div>
 
@@ -562,11 +293,6 @@ footer .reset-link:hover { color: var(--ink-mid); }
       const z = (n) => String(n).padStart(2, '0');
       return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}`;
     } catch { return '—'; }
-  };
-  const todayYmd = () => {
-    const d = new Date();
-    const z = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
   };
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c =>
     ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -607,7 +333,7 @@ footer .reset-link:hover { color: var(--ink-mid); }
     });
   }
 
-  // ─── 토글 (차트) ──────────────────────────────────
+  // ─── 토글 ────────────────────────────────────────
   let chartsBuilt = {};
   let cachedData = null;
 
@@ -636,7 +362,7 @@ footer .reset-link:hover { color: var(--ink-mid); }
     }
   }
 
-  // ─── 메인 렌더 ────────────────────────────────────
+  // ─── 렌더 ────────────────────────────────────────
   function render(d) {
     cachedData = d;
 
@@ -701,7 +427,7 @@ footer .reset-link:hover { color: var(--ink-mid); }
     });
   }
 
-  // ─── 에러 박스 ────────────────────────────────────
+  // ─── 에러 ────────────────────────────────────────
   function showError(msg) {
     const box = document.getElementById('errorBox');
     box.textContent = `⚠ ${msg}`;
@@ -712,8 +438,8 @@ footer .reset-link:hover { color: var(--ink-mid); }
   }
   function hideError() { document.getElementById('errorBox').classList.remove('show'); }
 
-  // ─── cashflow 로드 ────────────────────────────────
-  async function loadCashflow() {
+  // ─── fetch ───────────────────────────────────────
+  async function load() {
     const btn = document.getElementById('reloadBtn');
     btn.classList.add('spinning');
     hideError();
@@ -735,250 +461,9 @@ footer .reset-link:hover { color: var(--ink-mid); }
     }
   }
 
-  // ─── meta 로드 (입력 폼용) ────────────────────────
-  let meta = null;
-  let currentKind = 'expense';   // 'expense' | 'income' | 'transfer'
-
-  async function loadMeta() {
-    try {
-      const res = await fetch(CONFIG.endpoints.cashflow + '?action=meta');
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      meta = data;
-      renderFrequent();
-      renderSelects();
-    } catch (e) {
-      console.error('meta load fail:', e);
-      document.getElementById('frequentList').innerHTML =
-        '<div class="frequent-empty">메타 로딩 실패</div>';
-    }
-  }
-
-  // ─── 자주 쓰는 거래 렌더 ──────────────────────────
-  function renderFrequent() {
-    const wrap = document.getElementById('frequentList');
-    if (!meta) return;
-
-    // 모든 슬롯 합치기 (slot1, slot2, slot3)
-    const all = [];
-    Object.keys(meta.frequent || {}).forEach(slot => {
-      (meta.frequent[slot] || []).forEach(item => all.push(item));
-    });
-
-    if (!all.length) {
-      wrap.innerHTML = '<div class="frequent-empty">자주 쓰는 거래 없음<br><small style="color:var(--ink-dim)">후잉에서 등록하면 여기 나타나요</small></div>';
-      return;
-    }
-
-    wrap.innerHTML = '';
-    all.forEach(item => {
-      const btn = document.createElement('button');
-      btn.className = 'frequent-chip';
-      btn.innerHTML = `
-        <span class="name">${escapeHtml(item.item)}</span>
-        <span class="amt">${item.money ? fmtKRW(item.money) : '—'}</span>
-      `;
-      btn.addEventListener('click', () => applyFrequent(item));
-      wrap.appendChild(btn);
-    });
-  }
-
-  // 자주 쓰는 거래 클릭 → 폼에 채워넣기
-  function applyFrequent(item) {
-    // kind 추론
-    if (item.l_account === 'expenses') setKind('expense');
-    else if (item.r_account === 'income') setKind('income');
-    else setKind('transfer');
-
-    document.getElementById('f_item').value = item.item || '';
-    document.getElementById('f_money').value = item.money || '';
-    document.getElementById('f_date').value = todayYmd();
-    if (item.l_account_id) document.getElementById('f_left').value = item.l_account_id;
-    if (item.r_account_id) document.getElementById('f_right').value = item.r_account_id;
-  }
-
-  // ─── 세그먼트 (수입/지출/이체) ────────────────────
-  function setKind(kind) {
-    currentKind = kind;
-    document.querySelectorAll('#kindSeg button').forEach(b => {
-      b.classList.toggle('active', b.dataset.kind === kind);
-    });
-    renderSelects();
-  }
-  document.querySelectorAll('#kindSeg button').forEach(b => {
-    b.addEventListener('click', () => setKind(b.dataset.kind));
-  });
-
-  // kind별로 left/right select 옵션 채움
-  function renderSelects() {
-    if (!meta) return;
-    const left = document.getElementById('f_left');
-    const right = document.getElementById('f_right');
-    const leftLabel = document.querySelector('#leftField label');
-    const rightLabel = document.querySelector('#rightField label');
-
-    const fill = (selectEl, items) => {
-      selectEl.innerHTML = '';
-      items.forEach(a => {
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.textContent = a.title;
-        selectEl.appendChild(opt);
-      });
-    };
-
-    const assetsAndLiab = [
-      ...meta.accounts.assets,
-      ...meta.accounts.liabilities.map(l => ({ ...l, title: `[부채] ${l.title}` }))
-    ];
-
-    if (currentKind === 'expense') {
-      // l=expenses, r=assets/liabilities
-      leftLabel.textContent = '지출 항목';
-      rightLabel.textContent = '결제 수단';
-      fill(left, meta.accounts.expenses);
-      fill(right, assetsAndLiab);
-    } else if (currentKind === 'income') {
-      // l=assets, r=income
-      leftLabel.textContent = '입금 계좌';
-      rightLabel.textContent = '수입 항목';
-      fill(left, meta.accounts.assets);
-      fill(right, meta.accounts.income);
-    } else {
-      // transfer: l=assets, r=assets
-      leftLabel.textContent = '받는 계좌';
-      rightLabel.textContent = '보내는 계좌';
-      fill(left, meta.accounts.assets);
-      fill(right, meta.accounts.assets);
-    }
-  }
-
-  // ─── 입력 트리거 (접이식) ─────────────────────────
-  const trigger = document.getElementById('inputTrigger');
-  const collapse = document.getElementById('inputCollapse');
-  trigger.addEventListener('click', () => {
-    const open = collapse.classList.toggle('open');
-    trigger.classList.toggle('open', open);
-    if (open && !document.getElementById('f_date').value) {
-      document.getElementById('f_date').value = todayYmd();
-    }
-  });
-
-  // ─── 폼 초기화 ───────────────────────────────────
-  document.getElementById('btnReset').addEventListener('click', () => {
-    document.getElementById('f_item').value = '';
-    document.getElementById('f_money').value = '';
-    document.getElementById('f_date').value = todayYmd();
-    document.getElementById('f_memo').value = '';
-    hideFormMsg();
-  });
-
-  function showFormMsg(msg, type) {
-    const el = document.getElementById('formMsg');
-    el.textContent = msg;
-    el.className = `form-msg show ${type}`;
-  }
-  function hideFormMsg() {
-    document.getElementById('formMsg').classList.remove('show');
-  }
-
-  // ─── 거래 입력 제출 ──────────────────────────────
-  document.getElementById('btnSubmit').addEventListener('click', async () => {
-    const item = document.getElementById('f_item').value.trim();
-    const money = parseInt(document.getElementById('f_money').value, 10);
-    const date = document.getElementById('f_date').value;
-    const memo = document.getElementById('f_memo').value.trim();
-    const leftId = document.getElementById('f_left').value;
-    const rightId = document.getElementById('f_right').value;
-
-    if (!money || money <= 0) { showFormMsg('금액을 입력하세요', 'err'); return; }
-    if (!date) { showFormMsg('날짜를 입력하세요', 'err'); return; }
-    if (!leftId || !rightId) { showFormMsg('계정을 선택하세요', 'err'); return; }
-    if (currentKind === 'transfer' && leftId === rightId) {
-      showFormMsg('이체는 다른 계좌를 골라야 해요', 'err'); return;
-    }
-
-    // kind → l_account/r_account 변환
-    let lAcc, rAcc;
-    if (currentKind === 'expense')      { lAcc = 'expenses'; rAcc = guessAssetOrLiab(rightId); }
-    else if (currentKind === 'income')  { lAcc = 'assets';   rAcc = 'income'; }
-    else                                 { lAcc = 'assets';   rAcc = 'assets'; }
-
-    // 시크릿 확보
-    const secret = SecretManager.ensure();
-    if (!secret) { showFormMsg('시크릿이 필요합니다', 'err'); return; }
-
-    const btn = document.getElementById('btnSubmit');
-    btn.disabled = true;
-    btn.textContent = '기록 중…';
-    hideFormMsg();
-
-    try {
-      const res = await fetch(CONFIG.endpoints.cashflow, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: 'create_entry',
-          secret: secret,
-          entry: {
-            entry_date: date.replace(/-/g, ''),
-            l_account: lAcc,
-            l_account_id: leftId,
-            r_account: rAcc,
-            r_account_id: rightId,
-            item: item,
-            money: money,
-            memo: memo
-          }
-        })
-      });
-
-      const result = await res.json();
-      if (result.error) {
-        if (result.error === 'unauthorized') {
-          SecretManager.clear();
-          throw new Error('시크릿이 틀려요. 다시 입력하세요.');
-        }
-        throw new Error(result.error);
-      }
-
-      showFormMsg(`✅ 기록 완료 (entry_id: ${result.entry_id || '?'})`, 'ok');
-      // 폼 비우기
-      document.getElementById('f_item').value = '';
-      document.getElementById('f_money').value = '';
-      document.getElementById('f_memo').value = '';
-      // 데이터 새로고침
-      setTimeout(loadCashflow, 600);
-    } catch (e) {
-      console.error(e);
-      showFormMsg(`❌ ${e.message}`, 'err');
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '기록하기';
-    }
-  });
-
-  // 결제수단 ID로 assets/liabilities 추론
-  function guessAssetOrLiab(id) {
-    if (!meta) return 'assets';
-    if (meta.accounts.liabilities.some(a => a.id === id)) return 'liabilities';
-    return 'assets';
-  }
-
-  // ─── 시크릿 재설정 링크 ───────────────────────────
-  document.getElementById('resetSecret').addEventListener('click', () => {
-    if (confirm('시크릿을 재설정할까요? (다음 입력 때 다시 입력해야 함)')) {
-      SecretManager.clear();
-      alert('시크릿이 초기화됐어요.');
-    }
-  });
-
-  // ─── 새로고침 버튼 / 초기 로드 ────────────────────
-  document.getElementById('reloadBtn').addEventListener('click', loadCashflow);
-  if (CONFIG.autoRefreshMs) setInterval(loadCashflow, CONFIG.autoRefreshMs);
-
-  loadCashflow();
-  loadMeta();
+  document.getElementById('reloadBtn').addEventListener('click', load);
+  if (CONFIG.autoRefreshMs) setInterval(load, CONFIG.autoRefreshMs);
+  load();
 </script>
 </body>
 </html>
